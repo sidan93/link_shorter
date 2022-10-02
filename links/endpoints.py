@@ -19,7 +19,7 @@ router = APIRouter()
 
 
 @router.post(path='/urls/')
-async def create_short_url(
+def create_short_url(
     link: Link,
     db: Session = Depends(get_db)
 ):
@@ -37,7 +37,7 @@ async def create_short_url(
 @router.get(
     path='/urls/{short_url}'
 )
-async def get_orig_url(
+def get_orig_url(
     short_url: str,
     db: Session = Depends(get_db)
 ):
@@ -59,7 +59,7 @@ async def get_orig_url(
     return RedirectResponse(result.long_url)
 
 @router.get(path='/urls/{short_url}/stats')
-async def get_stats(
+def get_stats(
     short_url: str,
     db: Session = Depends(get_db)
 ):
@@ -71,7 +71,7 @@ async def get_stats(
     return result.count
 
 @router.put(path='/urls/{short_url}')
-async def update_short_url(
+def update_short_url(
     short_url: str,
     new_link: Link,
     db: Session = Depends(get_db)
@@ -92,7 +92,7 @@ async def update_short_url(
     return cur_link
 
 @router.delete(path='/urls/{short_url}')
-async def delete_url(
+def delete_url(
     short_url: str,
     db: Session = Depends(get_db)
 ):
