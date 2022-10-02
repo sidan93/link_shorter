@@ -1,5 +1,4 @@
 import pytest
-from http import client
 import re
 
 from fastapi.testclient import TestClient
@@ -23,6 +22,7 @@ client = TestClient(app)
 def test_create_short_url_errors(body, code):
     responce = client.post('/urls/', json=body)
     assert responce.status_code == code, responce.json()
+
 
 @pytest.mark.parametrize(
     "body",

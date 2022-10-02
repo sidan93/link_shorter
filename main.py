@@ -4,8 +4,6 @@ from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 
-from starlette.middleware.authentication import AuthenticationMiddleware
-
 from application import settings, router, database
 from links import model
 
@@ -23,6 +21,7 @@ app.add_middleware(
 
 app.include_router(router.router, prefix=settings.BASE_API_URL)
 
+
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -34,6 +33,7 @@ def custom_openapi():
     )
     app.openapi_schema = openapi_schema
     return app.openapi_schema
+
 
 app.openapi = custom_openapi
 

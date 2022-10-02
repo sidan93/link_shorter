@@ -1,20 +1,20 @@
 SQL_INSERT_SHORT_LINK = '''
-    WITH RECURSIVE 
+    WITH RECURSIVE
     generate_uuid AS (
-        SELECT 
+        SELECT
             gen_random_uuid() as key,
             1 as length
     ),
     prepare_links AS (
-        SELECT 
+        SELECT
             key,
             length,
             substr(key::TEXT, 0, length + 1) || substr(key::TEXT, 34, length) as short_url
         FROM generate_uuid
-        
-        UNION ALL 
-        
-        SELECT 
+
+        UNION ALL
+
+        SELECT
             key,
             length + 1,
             substr(key::TEXT, 0, length + 2) || substr(key::TEXT, 34, length + 1) as short_url
@@ -24,10 +24,9 @@ SQL_INSERT_SHORT_LINK = '''
                 FROM link
                 WHERE prepare_links.short_url = link.short_url
             )
-            
     ),
     pre_data AS (
-        SELECT 
+        SELECT
             key as id,
             (:long_url)::TEXT as long_url,
             short_url as short_url,
@@ -40,7 +39,7 @@ SQL_INSERT_SHORT_LINK = '''
     INSERT INTO link (id, long_url, short_url, deleted, created_at)
     SELECT *
     FROM pre_data
-	RETURNING id, long_url, short_url
+    RETURNING id, long_url, short_url
 '''
 
 SQL_INSERT_INTO_HISTORY = '''

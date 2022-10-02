@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey,\
+    UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 
 from application.database import Base
@@ -16,6 +17,7 @@ class Link(Base):
     deleted = Column(Boolean, nullable=False, default=False)
 
     __table_args__ = (UniqueConstraint('short_url'),)
+
 
 class History(Base):
     __tablename__ = 'history'

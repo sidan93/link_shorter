@@ -1,18 +1,16 @@
-from datetime import date
-from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import func
 
 from application.database import get_db
 from application.settings import SERVER_HOST, SERVER_PORT
 
 from links.schemas import Link
-from links.queries import SQL_INSERT_SHORT_LINK, SQL_INSERT_INTO_HISTORY, SQL_GET_VISITS_FOR_LAST_DAY
-from links.model import Link as LinkModel, History as HistoryModel
+from links.queries import SQL_INSERT_SHORT_LINK, SQL_INSERT_INTO_HISTORY, \
+    SQL_GET_VISITS_FOR_LAST_DAY
+from links.model import Link as LinkModel
 
 
 router = APIRouter()
@@ -34,6 +32,7 @@ def create_short_url(
 
     return result
 
+
 @router.get(
     path='/urls/{short_url}'
 )
@@ -53,22 +52,26 @@ def get_orig_url(
         raise HTTPException(status_code=400, detail='URL not found')
 
     # TODO вынести в селери, чтобы не торимозить клиентскую выдачу данных
-    # db.add(HistoryModel(link=result.id)) - incorrect working with datetime.now 
     db.execute(SQL_INSERT_INTO_HISTORY, {'link': result.id})
 
     return RedirectResponse(result.long_url)
+
 
 @router.get(path='/urls/{short_url}/stats')
 def get_stats(
     short_url: str,
     db: Session = Depends(get_db)
 ):
-    result = db.execute(SQL_GET_VISITS_FOR_LAST_DAY, {'short_url': short_url}).fetchone()
+    result = db.execute(
+        SQL_GET_VISITS_FOR_LAST_DAY,
+        {'short_url': short_url}
+    ).fetchone()
 
     if not result:
         raise HTTPException(status_code=400, detail='URL not found')
 
     return result.count
+
 
 @router.put(path='/urls/{short_url}')
 def update_short_url(
@@ -91,6 +94,7 @@ def update_short_url(
 
     return cur_link
 
+
 @router.delete(path='/urls/{short_url}')
 def delete_url(
     short_url: str,
@@ -100,7 +104,7 @@ def delete_url(
         LinkModel.short_url == short_url,
         LinkModel.deleted == False
     ).update({'deleted': True})
-    
+
     if result == 0:
         raise HTTPException(status_code=400, detail='URL not found')
 
